@@ -15,7 +15,7 @@
       }
     ]
   },
-  "description": "CPU, memory, and disk for UAT node_exporter in Hyderabad (ap-south-2). Jobs uat-env-public-ip and uat-env-private-ip.",
+  "description": "CPU, memory, and disk for every UAT node_exporter instance in Hyderabad (ap-south-2). Jobs uat-env-public-ip and uat-env-private-ip (port 9100).",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -23,6 +23,20 @@
   "links": [],
   "liveNow": false,
   "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 7,
+      "panels": [],
+      "title": "$instance",
+      "type": "row",
+      "repeat": "instance"
+    },
     {
       "datasource": {
         "type": "prometheus",
@@ -58,10 +72,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
+        "h": 8,
         "w": 8,
         "x": 0,
-        "y": 0
+        "y": 1
       },
       "id": 1,
       "options": {
@@ -76,7 +90,8 @@
           "fields": "",
           "values": false
         },
-        "textMode": "value_and_name"
+        "textMode": "value_and_name",
+        "wideLayout": true
       },
       "targets": [
         {
@@ -130,10 +145,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
+        "h": 8,
         "w": 8,
         "x": 8,
-        "y": 0
+        "y": 1
       },
       "id": 2,
       "options": {
@@ -148,7 +163,8 @@
           "fields": "",
           "values": false
         },
-        "textMode": "value_and_name"
+        "textMode": "value_and_name",
+        "wideLayout": true
       },
       "targets": [
         {
@@ -202,10 +218,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
+        "h": 8,
         "w": 8,
         "x": 16,
-        "y": 0
+        "y": 1
       },
       "id": 3,
       "options": {
@@ -220,7 +236,8 @@
           "fields": "",
           "values": false
         },
-        "textMode": "value_and_name"
+        "textMode": "value_and_name",
+        "wideLayout": true
       },
       "targets": [
         {
@@ -238,6 +255,19 @@
       ],
       "title": "Disk (current)",
       "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 9
+      },
+      "id": 8,
+      "panels": [],
+      "title": "All selected instances",
+      "type": "row"
     },
     {
       "datasource": {
@@ -305,10 +335,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 12,
         "w": 24,
         "x": 0,
-        "y": 5
+        "y": 10
       },
       "id": 4,
       "options": {
@@ -409,10 +439,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 12,
         "w": 24,
         "x": 0,
-        "y": 13
+        "y": 22
       },
       "id": 5,
       "options": {
@@ -513,10 +543,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 9,
+        "h": 12,
         "w": 24,
         "x": 0,
-        "y": 21
+        "y": 34
       },
       "id": 6,
       "options": {
@@ -574,7 +604,7 @@
           "type": "prometheus",
           "uid": "prometheus"
         },
-        "definition": "label_values(node_cpu_seconds_total{job=~\"uat-env-public-ip|uat-env-private-ip\"}, instance)",
+        "definition": "label_values(up{job=~\"uat-env-public-ip|uat-env-private-ip\"}, instance)",
         "hide": 0,
         "includeAll": true,
         "label": "Instance",
@@ -583,10 +613,10 @@
         "options": [],
         "query": {
           "qryType": 5,
-          "query": "label_values(node_cpu_seconds_total{job=~\"uat-env-public-ip|uat-env-private-ip\"}, instance)",
+          "query": "label_values(up{job=~\"uat-env-public-ip|uat-env-private-ip\"}, instance)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
-        "refresh": 1,
+        "refresh": 2,
         "regex": "",
         "sort": 1,
         "type": "query"

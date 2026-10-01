@@ -1,48 +1,92 @@
 groups:
 - name: alert_rules
   rules:
-  # Alert for CPU Usage for low env
-  - alert: HighCPUUsage
-    expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) > 85
+  # CPU warning for low env: above 75% and below 85%
+  - alert: CpuUsageWarning
+    expr: ((100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100)) > 75) and ((100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100)) < 85)
     for: 2m
     labels:
       severity: warning
-      environment: lower  
+      environment: lower
     annotations:
-      summary: "High CPU usage detected on instance {{ $labels.instance }}"
+      summary: "CPU usage above 75% on instance {{ $labels.instance }}"
+      description: "CPU usage is above 75% and below 85% for more than 2 minutes. Current value: {{ $value }}%"
+
+  # CPU critical for low env: above 85%
+  - alert: CpuUsageCritical
+    expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) > 85
+    for: 2m
+    labels:
+      severity: critical
+      environment: lower
+    annotations:
+      summary: "CPU usage above 85% on instance {{ $labels.instance }}"
       description: "CPU usage is above 85% for more than 2 minutes. Current value: {{ $value }}%"
 
-  # Alert for CPU Usage for prod env
-  - alert: HighCPUUsage
-    expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) > 85
+  # CPU warning for production: above 75% and below 85%
+  - alert: CpuUsageWarning
+    expr: ((100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100)) > 75) and ((100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100)) < 85)
     for: 2m
     labels:
       severity: warning
       environment: production
     annotations:
-      summary: "High CPU usage detected on instance {{ $labels.instance }}"
+      summary: "CPU usage above 75% on instance {{ $labels.instance }}"
+      description: "CPU usage is above 75% and below 85% for more than 2 minutes. Current value: {{ $value }}%"
+
+  # CPU critical for production: above 85%
+  - alert: CpuUsageCritical
+    expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) > 85
+    for: 2m
+    labels:
+      severity: critical
+      environment: production
+    annotations:
+      summary: "CPU usage above 85% on instance {{ $labels.instance }}"
       description: "CPU usage is above 85% for more than 2 minutes. Current value: {{ $value }}%"
-        
-  # Alert for Memory Usage for low env
-  - alert: HighMemoryUsage
-    expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 50
+
+  # Memory warning for low env: above 75% and below 85%
+  - alert: MemoryUsageWarning
+    expr: (((node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 75) and ((node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 < 85))
     for: 2m
     labels:
       severity: warning
-      environment: lower   
+      environment: lower
     annotations:
-      summary: "High Memory usage detected on instance {{ $labels.instance }}"
-      description: "Memory usage is above 85% for more than 2 minutes. Current value: {{ $value }}%"
+      summary: "Memory usage above 75% on instance {{ $labels.instance }}"
+      description: "Memory usage is above 75% and below 85% for more than 2 minutes. Current value: {{ $value }}%"
 
-  # Alert for Memory Usage for prod env
-  - alert: HighMemoryUsage
+  # Memory critical for low env: above 85%
+  - alert: MemoryUsageCritical
     expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 85
     for: 2m
     labels:
-      severity: warning
-      environment: production   
+      severity: critical
+      environment: lower
     annotations:
-      summary: "High Memory usage detected on instance {{ $labels.instance }}"
+      summary: "Memory usage above 85% on instance {{ $labels.instance }}"
+      description: "Memory usage is above 85% for more than 2 minutes. Current value: {{ $value }}%"
+
+  # Memory warning for production: above 75% and below 85%
+  - alert: MemoryUsageWarning
+    expr: (((node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 75) and ((node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 < 85))
+    for: 2m
+    labels:
+      severity: warning
+      environment: production
+    annotations:
+      summary: "Memory usage above 75% on instance {{ $labels.instance }}"
+      description: "Memory usage is above 75% and below 85% for more than 2 minutes. Current value: {{ $value }}%"
+
+  # Memory critical for production: above 85%
+  - alert: MemoryUsageCritical
+    expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 85
+    for: 2m
+    labels:
+      severity: critical
+      environment: production
+    annotations:
+      summary: "Memory usage above 85% on instance {{ $labels.instance }}"
       description: "Memory usage is above 85% for more than 2 minutes. Current value: {{ $value }}%"
         
   # Disk warning for low env: above 75% and below 85%
