@@ -9,7 +9,12 @@ dcgrafana/grafana/data/
 # Prometheus runtime/generated files
 prometheus/1
 prometheus/.alert.rules.yml.swp
-dcgrafana/alertmanager/alertmanager.yml
-# Secret/config files
+# Local secrets. .env.example stays tracked.
+.env
+!.env.example
+# Secret/config files. The live Prometheus config under dcgrafana is tracked.
 prometheus.yml
+!dcgrafana/prometheus/prometheus.yml
+# Old root path. dcgrafana/alertmanager/alertmanager.yml is a tracked template
+# with ${SLACK_CHANNEL} and ${SLACK_WEBHOOK_URL} placeholders only.
 alertmanager/alertmanager.yml

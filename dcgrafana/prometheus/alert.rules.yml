@@ -45,26 +45,48 @@ groups:
       summary: "High Memory usage detected on instance {{ $labels.instance }}"
       description: "Memory usage is above 85% for more than 2 minutes. Current value: {{ $value }}%"
         
-  # Alert for Disk Usage for low env
-  - alert: HighDiskUsage
-    expr: (node_filesystem_size_bytes{fstype!="tmpfs",mountpoint!="/run"} - node_filesystem_avail_bytes{fstype!="tmpfs",mountpoint!="/run"}) / node_filesystem_size_bytes{fstype!="tmpfs",mountpoint!="/run"} * 100 > 85
+  # Disk warning for low env: above 75% and below 85%
+  - alert: DiskUsageWarning
+    expr: ((node_filesystem_size_bytes{fstype!="tmpfs",mountpoint!="/run"} - node_filesystem_avail_bytes{fstype!="tmpfs",mountpoint!="/run"}) / node_filesystem_size_bytes{fstype!="tmpfs",mountpoint!="/run"} * 100 > 75) and ((node_filesystem_size_bytes{fstype!="tmpfs",mountpoint!="/run"} - node_filesystem_avail_bytes{fstype!="tmpfs",mountpoint!="/run"}) / node_filesystem_size_bytes{fstype!="tmpfs",mountpoint!="/run"} * 100 < 85)
     for: 2m
     labels:
       severity: warning
-      environment: lower 
+      environment: lower
     annotations:
-      summary: "High Disk usage detected on instance {{ $labels.instance }}"
+      summary: "Disk usage above 75% on instance {{ $labels.instance }}"
+      description: "Disk usage is above 75% and below 85% for more than 2 minutes. Current value: {{ $value }}%"
+
+  # Disk critical for low env: above 85%
+  - alert: DiskUsageCritical
+    expr: (node_filesystem_size_bytes{fstype!="tmpfs",mountpoint!="/run"} - node_filesystem_avail_bytes{fstype!="tmpfs",mountpoint!="/run"}) / node_filesystem_size_bytes{fstype!="tmpfs",mountpoint!="/run"} * 100 > 85
+    for: 2m
+    labels:
+      severity: critical
+      environment: lower
+    annotations:
+      summary: "Disk usage above 85% on instance {{ $labels.instance }}"
       description: "Disk usage is above 85% for more than 2 minutes. Current value: {{ $value }}%"
 
-  # Alert for Disk Usage for production
-  - alert: HighDiskUsage
-    expr: (node_filesystem_size_bytes{fstype!="tmpfs",mountpoint!="/run"} - node_filesystem_avail_bytes{fstype!="tmpfs",mountpoint!="/run"}) / node_filesystem_size_bytes{fstype!="tmpfs",mountpoint!="/run"} * 100 > 85
+  # Disk warning for production: above 75% and below 85%
+  - alert: DiskUsageWarning
+    expr: ((node_filesystem_size_bytes{fstype!="tmpfs",mountpoint!="/run"} - node_filesystem_avail_bytes{fstype!="tmpfs",mountpoint!="/run"}) / node_filesystem_size_bytes{fstype!="tmpfs",mountpoint!="/run"} * 100 > 75) and ((node_filesystem_size_bytes{fstype!="tmpfs",mountpoint!="/run"} - node_filesystem_avail_bytes{fstype!="tmpfs",mountpoint!="/run"}) / node_filesystem_size_bytes{fstype!="tmpfs",mountpoint!="/run"} * 100 < 85)
     for: 2m
     labels:
       severity: warning
       environment: production
     annotations:
-      summary: "High Disk usage detected on instance {{ $labels.instance }}"
+      summary: "Disk usage above 75% on instance {{ $labels.instance }}"
+      description: "Disk usage is above 75% and below 85% for more than 2 minutes. Current value: {{ $value }}%"
+
+  # Disk critical for production: above 85%
+  - alert: DiskUsageCritical
+    expr: (node_filesystem_size_bytes{fstype!="tmpfs",mountpoint!="/run"} - node_filesystem_avail_bytes{fstype!="tmpfs",mountpoint!="/run"}) / node_filesystem_size_bytes{fstype!="tmpfs",mountpoint!="/run"} * 100 > 85
+    for: 2m
+    labels:
+      severity: critical
+      environment: production
+    annotations:
+      summary: "Disk usage above 85% on instance {{ $labels.instance }}"
       description: "Disk usage is above 85% for more than 2 minutes. Current value: {{ $value }}%"
         
   # Alert for Stopped Containers for low env
