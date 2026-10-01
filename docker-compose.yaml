@@ -1,0 +1,68 @@
+services:
+  prometheus:
+    image: prom/prometheus:v2.55.0
+    container_name: prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.time=30d'
+      - '--storage.tsdb.retention.size=20GB'  
+    ports:
+      - 9090:9090
+    restart: unless-stopped
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - ./prometheus/alert.rules.yml:/etc/prometheus/alert.rules.yml
+      - prom_data:/prometheus
+    environment:
+      - WDS_SOCKET_PORT=0
+        #  node-exporter:
+        #image: prom/node-exporter:v1.6.1
+        #ports:
+        #- 9100:9100
+        #  cadvisor:
+        #image: gcr.io/cadvisor/cadvisor:latest
+        #ports:
+        #- 8081:8080
+        #volumes:
+        #- /:/rootfs:ro
+        #- /var/run:/var/run:rw
+        #- /sys:/sys:ro
+        #- /var/lib/docker/:/var/lib/docker:ro
+  grafana:
+    image: grafana/grafana:11.3.0
+    container_name: grafana
+    ports:
+      - 3000:3000
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=A7FSRE9K05GSF
+      - WDS_SOCKET_PORT=0
+      - GF_SERVER_CORS_ALLOW_ORIGIN=*
+      - GF_SERVER_CORS_ALLOW_HEADERS=Content-Type,Authorization,X-Requested-With
+      - GF_SERVER_CORS_ALLOW_METHODS=GET,POST,OPTIONS
+    volumes:
+      - ./grafana:/etc/grafana/provisioning/datasources
+      - ./grafana/data:/var/lib/grafana
+
+        #blackbox-exporter:
+        #image: quay.io/prometheus/blackbox-exporter:latest
+        # container_name: blackbox_exporter
+        #ports:
+        #- '9115:9115'
+        #restart: unless-stopped
+        #volumes:
+        #- ./blackbox:/config
+        #command:
+        #- '--config.file=/config/blackbox.yml'
+
+  alertmanager:
+    image: prom/alertmanager:v0.25.0
+    container_name: alertmanager
+    ports:
+      - 9093:9093
+    restart: unless-stopped
+    volumes:
+      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+volumes:
+  prom_data:

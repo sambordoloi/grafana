@@ -1,0 +1,176 @@
+---
+global:
+  scrape_interval: 15s
+  scrape_timeout: 10s
+  evaluation_interval: 15s
+
+rule_files:
+  - alert.rules.yml
+
+alerting:
+  alertmanagers:
+    - scheme: http
+      static_configs:
+        - targets:
+            - '13.235.35.34:9093'
+      timeout: 10s
+      api_version: v1
+
+scrape_configs:
+  - job_name: prometheus
+    honor_timestamps: true
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    metrics_path: /metrics
+    scheme: http
+    static_configs:
+      - targets:
+          - 'dc-prometheus.wrtual.in'
+
+  # - job_name: 'node-exporter'
+  #   static_configs:
+  #     - targets: ['13.235.35.34:9100']
+  # - job_name: 'cAdvisor'
+  #   static_configs:
+  #     - targets: ['13.235.35.34:8081']
+
+  - job_name: 'prod-apps-private-ip'
+    ec2_sd_configs:
+      - region: ap-south-1
+        port: 9100
+    relabel_configs:
+      - source_labels: [__meta_ec2_private_ip]
+        replacement: ${1}:9100
+        target_label: __address__
+      - source_labels: ['__meta_ec2_tag_Name']
+        target_label: instance
+      - source_labels: [__meta_ec2_instance_state]
+        separator: ;
+        regex: stopped
+        replacement: $1
+        action: drop
+      - replacement: production
+        target_label: environment
+
+  - job_name: 'low-env-public-ip'
+    ec2_sd_configs:
+      - region: us-east-2
+        port: 9100
+    relabel_configs:
+      - source_labels: [__meta_ec2_public_ip]
+        replacement: ${1}:9100
+        target_label: __address__
+      - source_labels: ['__meta_ec2_tag_Name']
+        target_label: instance
+      - source_labels: [__meta_ec2_instance_state]
+        separator: ;
+        regex: stopped
+        replacement: $1
+        action: drop
+      - replacement: lower
+        target_label: environment
+
+  - job_name: 'lower-env-public-ip'
+    ec2_sd_configs:
+      - region: ap-south-2
+        port: 9323
+    relabel_configs:
+      - source_labels: [__meta_ec2_public_ip]
+        replacement: ${1}:9323
+        target_label: __address__
+      - source_labels: ['__meta_ec2_tag_Name']
+        target_label: instance
+      - source_labels: [__meta_ec2_instance_state]
+        separator: ;
+        regex: stopped
+        replacement: $1
+        action: drop
+      - replacement: lower
+        target_label: environment
+
+  - job_name: 'prod-env-private-ip'
+    ec2_sd_configs:
+      - region: ap-south-1
+        port: 9323
+    relabel_configs:
+      - source_labels: [__meta_ec2_private_ip]
+        replacement: ${1}:9323
+        target_label: __address__
+      - source_labels: ['__meta_ec2_tag_Name']
+        target_label: instance
+      - source_labels: [__meta_ec2_instance_state]
+        separator: ;
+        regex: stopped
+        replacement: $1
+        action: drop
+      - replacement: production
+        target_label: environment
+
+  - job_name: 'kafka-prod'
+    honor_labels: true
+    static_configs:
+      - targets: ['172.31.42.170:9308']
+
+  - job_name: 'kafka-stage'
+    honor_labels: true
+    static_configs:
+      - targets: ['3.18.167.140:9308']
+
+  - job_name: 'uat-env-public-ip'
+    ec2_sd_configs:
+      - region: ap-south-2
+        port: 9100
+    relabel_configs:
+      - source_labels: [__meta_ec2_public_ip]
+        replacement: ${1}:9100
+        target_label: __address__
+      - source_labels: ['__meta_ec2_tag_Name']
+        target_label: instance
+      - replacement: lower
+        target_label: environment
+
+  - job_name: 'uat-env-private-ip'
+    ec2_sd_configs:
+      - region: ap-south-2
+        port: 9100
+    relabel_configs:
+      - source_labels: [__meta_ec2_private_ip]
+        replacement: ${1}:9100
+        target_label: __address__
+      - source_labels: ['__meta_ec2_tag_Name']
+        target_label: instance
+      - replacement: lower
+        target_label: environment
+
+  - job_name: 'insure-public-ip'
+    ec2_sd_configs:
+      - region: ap-south-1
+        role_arn: arn:aws:iam::557690618009:role/Grafana-access
+        port: 9100
+    relabel_configs:
+      - source_labels: [__meta_ec2_public_ip]
+        replacement: ${1}:9100
+        target_label: __address__
+      - source_labels: [__meta_ec2_tag_AlertChannel]
+        target_label: alert_channel          
+      - source_labels: ['__meta_ec2_tag_Name']
+        target_label: instance
+      - replacement: production
+        target_label: environment
+
+  - job_name: 'ssl_expiry_testodsy'
+    metrics_path: /probe
+    params:
+      module: [ssl_expiry]
+    static_configs:
+      - targets:
+          - https://stagedem.wrtual.in
+        labels:
+          environment: lower
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 13.235.35.34:9115

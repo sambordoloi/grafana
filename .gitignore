@@ -1,0 +1,15 @@
+*.swp
+*.bak
+*.tmp
+
+# Grafana runtime data
+grafana/data/
+dcgrafana/grafana/data/
+
+# Prometheus runtime/generated files
+prometheus/1
+prometheus/.alert.rules.yml.swp
+dcgrafana/alertmanager/alertmanager.yml
+# Secret/config files
+prometheus.yml
+alertmanager/alertmanager.yml

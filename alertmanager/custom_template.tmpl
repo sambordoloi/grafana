@@ -1,0 +1,19 @@
+{{ define "custom_slack_message" }}
+:bell: *[{{ .Status | toUpper }}] Alert:* {{ .CommonLabels.alertname }}
+*Description:* {{ .Annotations.description }}
+*Severity:* {{ .CommonLabels.severity }}
+*Instance:* {{ .CommonLabels.instance }}
+{{ if .Alerts.Firing }}
+:fire: *Firing Alerts:*
+{{ range .Alerts.Firing }}
+- {{ .Annotations.summary }} ({{ .Labels.severity }})
+{{ end }}
+{{ end }}
+{{ if .Alerts.Resolved }}
+:white_check_mark: *Resolved Alerts:*
+{{ range .Alerts.Resolved }}
+- {{ .Annotations.summary }}
+{{ end }}
+{{ end }}
+{{ end }}
+
