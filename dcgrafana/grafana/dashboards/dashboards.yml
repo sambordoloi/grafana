@@ -7,5 +7,7 @@ providers:
     disableDeletion: false
     updateIntervalSeconds: 10
     options:
+      # JSON files mounted from ./grafana/dashboards.
       path: /etc/grafana/provisioning/dashboards
+      foldersFromFilesStructure: false
 
