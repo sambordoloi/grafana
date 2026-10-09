@@ -1,3 +1,5 @@
+# Not used as-is. render-config.sh builds the live config from dcgrafana/.env,
+# including SHIFT_* windows, when the container starts.
 global:
   resolve_timeout: 5m
 

@@ -30,7 +30,7 @@ services:
   alertmanager:
     image: prom/alertmanager:v0.25.0
     container_name: alertmanager
-    # SLACK_CHANNEL and SLACK_WEBHOOK_URL are substituted at startup.
+    # Slack, PagerDuty keys, and SHIFT_* hours are read from .env at startup.
     env_file:
       - .env
     entrypoint: ["/bin/sh", "/etc/alertmanager/render-config.sh"]
