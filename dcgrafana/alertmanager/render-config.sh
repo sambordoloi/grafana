@@ -155,6 +155,8 @@ fi
     echo "      - channel: '$(sq "$slack_channel")'"
     echo "        api_url: '$(sq "$slack_url")'"
     echo "        send_resolved: true"
+    echo "        title: '{{ .Status | toUpper }}: {{ range .Alerts.Firing }}{{ .Annotations.summary }}. {{ end }}'"
+    echo "        text: '{{ range .Alerts.Firing }}{{ .Annotations.description }}{{\"\\n\"}}{{ end }}'"
   fi
   if [ "$root" = "empty" ]; then
     echo "  - name: empty"
@@ -166,7 +168,7 @@ fi
     echo "      - routing_key: '$(sq "$2")'"
     echo "        send_resolved: true"
     echo "        severity: critical"
-    echo "        description: '{{ .CommonAnnotations.summary }}'"
+    echo "        description: '{{ range .Alerts.Firing }}{{ .Annotations.summary }}. {{ end }}'"
     echo "        details:"
     echo "          environment: '{{ .CommonLabels.environment }}'"
     echo "          instance: '{{ .CommonLabels.instance }}'"

@@ -29,7 +29,7 @@ receivers:
       - routing_key: '${PAGERDUTY_ROUTING_KEY}'
         send_resolved: true
         severity: '{{ if eq .CommonLabels.severity "critical" }}critical{{ else }}warning{{ end }}'
-        description: '{{ .CommonAnnotations.summary }}'
+        description: '{{ range .Alerts.Firing }}{{ .Annotations.summary }}. {{ end }}'
         details:
           environment: '{{ .CommonLabels.environment }}'
           instance: '{{ .CommonLabels.instance }}'
